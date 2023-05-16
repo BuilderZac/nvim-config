@@ -98,6 +98,10 @@ require('lazy').setup({
   'tc50cal/vim-terminal'
   },
 
+  { -- Add numbers.vim to toggle number type
+  'myusuf3/numbers.vim'
+  },
+
   { -- Add indentation guides even on blank lines
     'lukas-reineke/indent-blankline.nvim',
     -- Enable `lukas-reineke/indent-blankline.nvim`
