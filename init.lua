@@ -95,11 +95,13 @@ require('lazy').setup({
   },
 
   { -- Add terminal
-  'tc50cal/vim-terminal'
+    'akinsho/toggleterm.nvim',
+    version = "*",
+    config = true
   },
 
   { -- Add numbers.vim to toggle number type
-  'myusuf3/numbers.vim'
+    'myusuf3/numbers.vim'
   },
 
   { -- Add indentation guides even on blank lines
@@ -165,7 +167,7 @@ vim.cmd.colorscheme('lunaperche')
 vim.o.hlsearch = false
 
 -- Make line numbers default
-vim.wo.number = true
+vim.wo.number = 'True'
 
 -- Enable mouse mode
 vim.o.mouse = 'a'
@@ -207,6 +209,20 @@ vim.keymap.set('n', "<C-Left>", ":tabprevious<CR>" ,{ desc = 'Switch tabs left' 
 
 -- Keymap for NERDTree
 vim.keymap.set('n', "<C-t>", ":NERDTreeToggle<CR>" ,{ desc = 'Toggle NERDTree open and closed' })
+
+-- Keymap for toggle terminal
+ function _G.set_terminal_keymaps()
+   local opts = {buffer = 0}
+   vim.keymap.set('t', '<esc>', [[<C-\><C-n>]], opts)
+   vim.keymap.set('t', 'jk', [[<C-\><C-n>]], opts)
+   vim.keymap.set('t', '<C-h>', [[<Cmd>wincmd h<CR>]], opts)
+   vim.keymap.set('t', '<C-j>', [[<Cmd>wincmd j<CR>]], opts)
+   vim.keymap.set('t', '<C-k>', [[<Cmd>wincmd k<CR>]], opts)
+   vim.keymap.set('t', '<C-l>', [[<Cmd>wincmd l<CR>]], opts)
+   vim.keymap.set('t', '<C-w>', [[<C-\><C-n><C-w>]], opts)
+ end
+
+ vim.cmd('autocmd! TermOpen term://*toggleterm#* lua set_terminal_keymaps()')
 
 -- Keymaps for better default experience
 -- See `:help vim.keymap.set()`
@@ -397,6 +413,16 @@ local servers = {
     },
   },
 }
+
+-- Setup Toggle terminal
+require("toggleterm").setup{
+  persistant_size = true,
+  persistant_mode = true,
+  direction = 'horizontal',
+  close_on_exit = true,
+  insert_mappings = true
+}
+
 
 -- Setup neovim lua configuration
 require('neodev').setup()
