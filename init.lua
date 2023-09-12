@@ -99,6 +99,10 @@ require('lazy').setup({
     version = "*",
     config = true
   },
+  
+  { -- Add auto status
+    'rmagatti/auto-session'
+  },
 
   { -- Add numbers.vim to toggle number type
     'myusuf3/numbers.vim'
@@ -221,6 +225,7 @@ vim.keymap.set('n', "<C-t>", ":NERDTreeToggle<CR>" ,{ desc = 'Toggle NERDTree op
    vim.keymap.set('t', '<C-l>', [[<Cmd>wincmd l<CR>]], opts)
    vim.keymap.set('t', '<C-w>', [[<C-\><C-n><C-w>]], opts)
  end
+vim.keymap.set('n', "<C-s>", ":ToggleTerm<CR>", { desc = 'Toggle ToggleTerm open and closed'})
 
  vim.cmd('autocmd! TermOpen term://*toggleterm#* lua set_terminal_keymaps()')
 
@@ -421,6 +426,19 @@ require("toggleterm").setup{
   direction = 'horizontal',
   close_on_exit = true,
   insert_mappings = true
+}
+
+-- Setup auto terminal
+require("auto-session").setup {
+  log_level = "error",
+
+  cwd_change_handling = {
+    restore_upcoming_session = true, -- already the default, no need to specify like this, only here as an example
+    pre_cwd_changed_hook = nil, -- already the default, no need to specify like this, only here as an example
+    post_cwd_changed_hook = function() -- example refreshing the lualine status line _after_ the cwd changes
+      require("lualine").refresh() -- refresh lualine so the new session name is displayed in the status bar
+    end,
+  },
 }
 
 
