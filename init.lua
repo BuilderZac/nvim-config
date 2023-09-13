@@ -176,6 +176,12 @@ vim.wo.number = 'True'
 -- Enable mouse mode
 vim.o.mouse = 'a'
 
+-- Set indent to three spaces
+vim.o.expandtab = true
+vim.o.smartindent = true
+vim.o.tabstop = 3
+vim.o.shiftwidth = 3
+
 -- Sync clipboard between OS and Neovim.
 --  Remove this option if you want your OS clipboard to remain independent.
 --  See `:help 'clipboard'`
