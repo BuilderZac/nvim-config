@@ -1,5 +1,8 @@
 --BuilderZac's neovim config
 --Based on https://github.com/nvim-lua/kickstart.nvim
+-- Modified segments will be marked with a comment like below
+-- cx start
+-- cx end
 
 
 -- Set <space> as the leader key
@@ -74,10 +77,12 @@ require('lazy').setup({
     },
   },
 
-  -- Useful plugin to show you pending keybinds.
-  { 'folke/which-key.nvim', opts = {} },
-  {
-    -- Adds git related signs to the gutter, as well as utilities for managing changes
+  { -- Useful plugin to show you pending keybinds.
+    'folke/which-key.nvim', opts = {} 
+  },
+
+
+  { -- Adds git related signs to the gutter, as well as utilities for managing changes
     'lewis6991/gitsigns.nvim',
     opts = {
       -- See `:help gitsigns.txt`
@@ -107,6 +112,8 @@ require('lazy').setup({
     },
   },
 
+  -- c1 start
+
   { -- Add eyeliner
     'jinh0/eyeliner.nvim',
       config = function()
@@ -116,20 +123,83 @@ require('lazy').setup({
     end
   },
 
+  {"nvim-neotest/neotest",
+    dependencies = {
+      "nvim-lua/plenary.nvim",
+      "nvim-treesitter/nvim-treesitter",
+      "antoinemadec/FixCursorHold.nvim"
+    }
+  },
+
+  { -- Add DAP
+    'mfussenegger/nvim-dap'
+  },
+
+  { -- Add Rip Grep
+    "rinx/nvim-ripgrep",
+    config = function()
+      require("nvim-ripgrep").setup {
+          -- your configurations here
+      }
+    end
+  },
+
+  { -- Add visual multi
+    "mg979/vim-visual-multi",
+  },
+
+  { -- Add smart open
+    "danielfalk/smart-open.nvim",
+    branch = "0.2.x",
+    config = function()
+    require("telescope").load_extension("smart_open")
+    end,
+    dependencies = {
+    "kkharji/sqlite.lua",
+    -- Only required if using match_algorithm fzf
+    --{ "nvim-telescope/telescope-fzf-native.nvim", build = "make" },
+    -- Optional.  If installed, native fzy will be used when match_algorithm is fzy
+    --{ "nvim-telescope/telescope-fzy-native.nvim" },
+  },
+ },
+
   { -- Add color schemes
     'rafi/awesome-vim-colorschemes'
+  },
+
+  --{ -- Add NVim Tree
+  --  'nvim-tree/nvim-tree.lua',
+  --},
+
+  { -- Add file icons
+    'nvim-tree/nvim-web-devicons'
   },
 
   { -- Add NERDTree
     'preservim/nerdtree'
   },
 
-  { -- Set airline as statusline
-    'vim-airline/vim-airline'
+  { -- Add felin
+    "freddiehaddad/feline.nvim",
+    config = function()
+      require("plugins.feline") -- the location of this GIST.
+    end,
   },
+
+  --{ -- Set airline as statusline
+  --  'vim-airline/vim-airline'
+  --},
 
   { -- Add themes
     'vim-airline/vim-airline-themes'
+  },
+
+  { -- Add lsp status
+    'nvim-lua/lsp-status.nvim'
+  },
+
+  { -- Add devicons
+    'ryanoasis/vim-devicons'
   },
 
   { -- Add terminal
@@ -145,6 +215,8 @@ require('lazy').setup({
   { -- Add numbers.vim to toggle number type
     'myusuf3/numbers.vim'
   },
+
+  -- c1 end
 
   {  -- Add indentation guides even on blank lines
     'lukas-reineke/indent-blankline.nvim',
@@ -205,7 +277,16 @@ require('lazy').setup({
 -- [[ Setting options ]]
 -- See `:help vim.o`
 -- NOTE: You can change these options as you wish!
-vim.cmd.AirlineTheme 'abstract'
+
+-- c2 start
+
+-- Nvim Tree stuff
+--vim.g.loaded_netrw = 1
+--vim.g.loaded_netrwPlugin = 1
+--vim.opt.termguicolors = true
+--vim.o.termguicolors = true
+
+--vim.cmd.AirlineTheme 'abstract'
 vim.cmd.colorscheme('lunaperche')
 
 -- Set highlight on search
@@ -222,6 +303,8 @@ vim.o.expandtab = true
 vim.o.smartindent = true
 vim.o.tabstop = 3
 vim.o.shiftwidth = 3
+
+-- c2 end
 
 -- Sync clipboard between OS and Neovim.
 --  Remove this option if you want your OS clipboard to remain independent.
@@ -253,12 +336,23 @@ vim.o.termguicolors = true
 
 -- [[ Basic Keymaps ]]
 
+-- c3 start
+
+-- Keymap for smart open
+vim.keymap.set("n", "<leader>f", function ()
+  require("telescope").extensions.smart_open.smart_open()
+end, { noremap = true, silent = true, desc = 'Open smart open menu' })
+
 -- Keymap for tabs
 vim.keymap.set('n', "<C-Right>", ":tabnext<CR>" ,{ desc = 'Switch tabs right' })
 vim.keymap.set('n', "<C-Left>", ":tabprevious<CR>" ,{ desc = 'Switch tabs left' })
 
 -- Keymap for NERDTree
 vim.keymap.set('n', "<C-t>", ":NERDTreeToggle<CR>" ,{ desc = 'Toggle NERDTree open and closed' })
+
+-- Keymaps for Nvim Tree
+--vim.keymap.set('n', "<C-t>", ":NvimTreeToggle<CR>" ,{ desc = 'Toggle NERDTree open and closed' })
+--vim.keymap.set('n', '?', api.tree.toggle_help, opts('Help'))
 
 -- Keymap for toggle terminal
  function _G.set_terminal_keymaps()
@@ -274,6 +368,8 @@ vim.keymap.set('n', "<C-t>", ":NERDTreeToggle<CR>" ,{ desc = 'Toggle NERDTree op
 vim.keymap.set('n', "<C-s>", ":ToggleTerm<CR>", { desc = 'Toggle ToggleTerm open and closed'})
 
 vim.cmd('autocmd! TermOpen term://*toggleterm#* lua set_terminal_keymaps()')
+
+-- c3 end
 
 -- Keymaps for better default experience
 -- See `:help vim.keymap.set()`
@@ -484,6 +580,43 @@ local servers = {
   },
 }
 
+-- c4 start
+
+-- Setup feline
+require'plugins.feline'
+--require('feline').setup()
+--require('feline').winbar.setup()
+
+-- Setup nvim tree
+--local function my_on_attach(bufnr)
+--  local api = require "nvim-tree.api"
+--
+--  local function opts(desc)
+--    return { desc = "nvim-tree: " .. desc, buffer = bufnr, noremap = true, silent = true, nowait = true }
+--  end
+--
+  -- default mappings
+--  api.config.mappings.default_on_attach(bufnr)
+
+  -- custom mappings
+  --vim.keymap.set('n', '<C-t>', api.tree.change_root_to_parent,        opts('Up'))
+--  vim.keymap.set('n', '?',     api.tree.toggle_help,                  opts('Help'))
+--  vim.keymap.set('n', '<C-t>',":NvimTreeToggle<CR>",                  opts('Toggle Closed'))
+--end
+--require("nvim-tree").setup({
+--  sort_by = "case_sensitive",
+--  view = {
+--    width = 30,
+--  },
+--  renderer = {
+--    group_empty = true,
+--  },
+--  filters = {
+--    dotfiles = true,
+--  },
+--  on_attach = my_on_attach,
+--  })
+
 -- Setup Eyeliner
 --vim.api.nvim_set_hl(0, 'EyelinerPrimary', { bold = true, underline = true })
 --vim.api.nvim_set_hl(0, 'EyelinerSecondary', { underline = true })
@@ -517,6 +650,8 @@ require("auto-session").setup {
     end,
   },
 }
+
+-- c4 end
 
 -- Setup neovim lua configuration
 require('neodev').setup()
