@@ -301,7 +301,7 @@ require('lazy').setup({
 --vim.o.termguicolors = true
 
 --vim.cmd.AirlineTheme 'abstract'
-vim.cmd.colorscheme('lunaperche')
+vim.cmd.colorscheme('molokai')
 
 -- Set highlight on search
 vim.o.hlsearch = false
