@@ -194,9 +194,9 @@ local left = {
 	c.vim_mode,
 	c.gitBranch,
 	c.gitDiffAdded,
-  c.gitDiffRemoved,
+	c.gitDiffRemoved,
 	--c.gitDiffChanged,
-  c.diagnos,
+	c.diagnos,
 	c.separator,
 }
 
