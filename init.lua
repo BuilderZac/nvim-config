@@ -28,6 +28,12 @@ vim.opt.number = true
 -- Enable mouse mode, can be useful for resizing splits for example!
 vim.opt.mouse = "a"
 
+-- Set indent to three spaces
+vim.o.expandtab = true
+vim.o.smartindent = true
+vim.o.tabstop = 3
+vim.o.shiftwidth = 3
+
 -- Don't show the mode, since it's already in the status line
 vim.opt.showmode = false
 
