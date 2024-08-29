@@ -5,6 +5,15 @@
 -- cx start
 -- cx end
 
+-- c2 start
+vim.api.nvim_create_autocmd("BufEnter", {
+	callback = function()
+		vim.opt.formatoptions:remove({ "c", "r", "o" })
+	end,
+	desc = "Disable New Line Comment",
+})
+-- c2 end
+
 -- Set <space> as the leader key
 -- See `:help mapleader`
 --  NOTE: Must happen before plugins are loaded (otherwise wrong leader will be used)
@@ -165,7 +174,6 @@ require("lazy").setup({
 	-- Use `opts = {}` to force a plugin to be loaded.
 
 	-- c1 start
-
 	{ -- Add visual multi
 		"mg979/vim-visual-multi",
 	},
