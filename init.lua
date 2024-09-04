@@ -35,10 +35,10 @@ vim.g.have_nerd_font = false
 --  For more options, you can see `:help option-list`
 
 -- Make line numbers default
-vim.opt.number = true
+-- vim.opt.number = true -- modded
 -- You can also add relative line numbers, to help with jumping.
 --  Experiment for yourself to see if you like it!
--- vim.opt.relativenumber = true
+vim.opt.relativenumber = true -- modded
 
 -- Enable mouse mode, can be useful for resizing splits for example!
 vim.opt.mouse = "a"
@@ -88,7 +88,7 @@ vim.opt.listchars = { tab = "» ", trail = "·", nbsp = "␣" }
 vim.opt.inccommand = "split"
 
 -- Show which line your cursor is on
-vim.opt.cursorline = true
+vim.opt.cursorline = false
 
 -- Minimal number of screen lines to keep above and below the cursor.
 vim.opt.scrolloff = 10
@@ -218,8 +218,84 @@ require("lazy").setup({
 		"rafi/awesome-vim-colorschemes",
 	},
 
-	{ -- Add numbers.vim to toggle number type
-		"myusuf3/numbers.vim",
+	{ -- Adds splash page
+		"nvimdev/dashboard-nvim",
+		event = "VimEnter",
+		config = function()
+			require("dashboard").setup({
+
+				theme = "hyper",
+				config = {
+					footer = { "Keep moving like no one is looking" }, -- footer
+					week_header = {
+						enable = true,
+					},
+					shortcut = {
+						{ desc = "󰊳 Update", group = "@property", action = "Lazy update", key = "u" },
+						{
+							icon = " ",
+							icon_hl = "@variable",
+							desc = "Files",
+							group = "Label",
+							action = "Telescope find_files",
+							key = "f",
+						},
+					},
+				},
+			})
+		end,
+		dependencies = { { "nvim-tree/nvim-web-devicons" } },
+	},
+
+	{ -- Added buffer auto closer
+		"axkirillov/hbac.nvim",
+		config = true,
+	},
+
+	{ -- Added code runner
+		"CRAG666/code_runner.nvim",
+		config = true,
+		config = function()
+			require("code_runner").setup({
+				filetype = {
+					java = {
+						"cd $dir &&",
+						"javac $fileName &&",
+						"java $fileNameWithoutExt",
+					},
+					python = "python3 -u",
+				},
+			})
+		end,
+	},
+
+	{
+		"kdheepak/lazygit.nvim",
+		-- optional for floating window border decoration
+		requires = {
+			"nvim-lua/plenary.nvim",
+		},
+	},
+
+	{ -- Added URL opener
+		"sontungexpt/url-open",
+		event = "VeryLazy",
+		cmd = "URLOpenUnderCursor",
+		config = function()
+			local status_ok, url_open = pcall(require, "url-open")
+			if not status_ok then
+				return
+			end
+			url_open.setup({})
+		end,
+	},
+
+	{ -- Adds auto directory maker
+		"jghauser/mkdir.nvim",
+	},
+
+	{ -- Adds minesweeper
+		"seandewar/nvimesweeper",
 	},
 
 	-- c1 end
