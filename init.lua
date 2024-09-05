@@ -254,7 +254,6 @@ require("lazy").setup({
 
 	{ -- Added code runner
 		"CRAG666/code_runner.nvim",
-		config = true,
 		config = function()
 			require("code_runner").setup({
 				filetype = {
@@ -296,6 +295,22 @@ require("lazy").setup({
 
 	{ -- Adds minesweeper
 		"seandewar/nvimesweeper",
+	},
+
+	{
+		"olimorris/codecompanion.nvim",
+		dependencies = {
+			"nvim-lua/plenary.nvim",
+			"nvim-treesitter/nvim-treesitter",
+			"nvim-telescope/telescope.nvim", -- Optional
+			{
+				"stevearc/dressing.nvim", -- Optional: Improves the default Neovim UI
+				opts = {},
+			},
+		},
+		config = function(_, opts)
+			require("plugins.codecompanion") -- the location of this GIST.
+		end,
 	},
 
 	-- c1 end
