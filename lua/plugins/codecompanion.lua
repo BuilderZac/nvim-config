@@ -1,13 +1,29 @@
+-- Define the path to the file
+local file_path = vim.fn.expand("~/.config/nvim/lua/plugins/keys/openai.txt")
+
+-- Function to read the API key from the file
+local function read_api_key(file_path)
+	local file = io.open(file_path, "r") -- Open the file in read mode
+	if not file then
+		print("Error: Could not open the file at " .. file_path)
+		return nil
+	end
+
+	local api_key = file:read("*a") -- Read the entire file
+	file:close() -- Close the file after reading
+
+	-- Remove any trailing whitespace (like newline characters)
+	api_key = api_key:gsub("%s+", "")
+
+	return api_key
+end
+
 require("codecompanion").setup({
 	adapters = {
-		anthropic = "anthropic",
-		copilot = "copilot",
-		gemini = "gemini",
-		ollama = "ollama",
 		openai = function()
 			return require("codecompanion.adapters").extend("openai", {
 				env = {
-					require("plugins.keys.openai"),
+					api_key = read_api_key(file_path),
 				},
 			})
 		end,
