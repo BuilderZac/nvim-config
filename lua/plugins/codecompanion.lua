@@ -78,24 +78,38 @@ require("codecompanion").setup({
 						has_params = true,
 					},
 				},
-				["buffers"] = {
-					callback = "helpers.variables.buffers",
-					description = "Share all current open buffers with the LLM",
-					opts = {
-						contains_code = true,
-					},
-				},
 				["editor"] = {
 					callback = "helpers.variables.editor",
-					description = "Share the code that you see in Neovim",
+					description = "Share the code that you see in Neovim with the LLM",
 					opts = {
 						contains_code = true,
 					},
 				},
 				["lsp"] = {
 					callback = "helpers.variables.lsp",
-					contains_code = true,
 					description = "Share LSP information and code for the current buffer",
+					opts = {
+						contains_code = true,
+					},
+				},
+			},
+			slash_commands = {
+				["buffer"] = {
+					callback = "helpers.slash_commands.buffer",
+					description = "Share a loaded buffer's contents with the LLM",
+					opts = {
+						contains_code = true,
+						provider = "default", -- default|telescope
+					},
+				},
+				["file"] = {
+					callback = "helpers.slash_commands.file",
+					description = "Share a file's contents with the LLM",
+					opts = {
+						contains_code = true,
+						max_lines = 1000,
+						provider = "telescope", -- telescope|mini_pick
+					},
 				},
 			},
 			keymaps = {
@@ -116,12 +130,20 @@ require("codecompanion").setup({
 					callback = "keymaps.send",
 					description = "Send",
 				},
+				regenerate = {
+					modes = {
+						n = "gr",
+					},
+					index = 2,
+					callback = "keymaps.regenerate",
+					description = "Regenerate the last response",
+				},
 				close = {
 					modes = {
 						n = "<C-c>",
 						i = "<C-c>",
 					},
-					index = 2,
+					index = 3,
 					callback = "keymaps.close",
 					description = "Close Chat",
 				},
@@ -129,7 +151,7 @@ require("codecompanion").setup({
 					modes = {
 						n = "q",
 					},
-					index = 3,
+					index = 4,
 					callback = "keymaps.stop",
 					description = "Stop Request",
 				},
@@ -137,7 +159,7 @@ require("codecompanion").setup({
 					modes = {
 						n = "gx",
 					},
-					index = 4,
+					index = 5,
 					callback = "keymaps.clear",
 					description = "Clear Chat",
 				},
@@ -153,7 +175,7 @@ require("codecompanion").setup({
 					modes = {
 						n = "}",
 					},
-					index = 8,
+					index = 7,
 					callback = "keymaps.next_chat",
 					description = "Next Chat",
 				},
@@ -161,7 +183,7 @@ require("codecompanion").setup({
 					modes = {
 						n = "{",
 					},
-					index = 9,
+					index = 8,
 					callback = "keymaps.previous_chat",
 					description = "Previous Chat",
 				},
@@ -169,7 +191,7 @@ require("codecompanion").setup({
 					modes = {
 						n = "]]",
 					},
-					index = 10,
+					index = 9,
 					callback = "keymaps.next_header",
 					description = "Next Header",
 				},
@@ -177,7 +199,7 @@ require("codecompanion").setup({
 					modes = {
 						n = "[[",
 					},
-					index = 11,
+					index = 10,
 					callback = "keymaps.previous_header",
 					description = "Previous Header",
 				},
@@ -185,9 +207,17 @@ require("codecompanion").setup({
 					modes = {
 						n = "ga",
 					},
-					index = 12,
+					index = 11,
 					callback = "keymaps.change_adapter",
 					description = "Change adapter",
+				},
+				fold_code = {
+					modes = {
+						n = "gf",
+					},
+					index = 12,
+					callback = "keymaps.fold_code",
+					description = "Fold code",
 				},
 				debug = {
 					modes = {
@@ -272,7 +302,6 @@ Answer the user's questions with the tool's output.]],
 			prompts = {
 				{
 					role = "system",
-					tag = "system_tag",
 					content = function(context)
 						if context.buftype == "terminal" then
 							return "I want you to act as an expert in writing terminal commands that will work for my current shell "
@@ -283,6 +312,10 @@ Answer the user's questions with the tool's output.]],
 							.. context.filetype
 							.. " developer. I will ask you specific questions and I want you to return raw code only (no codeblocks and no explanations). If you can't respond with code, respond with nothing"
 					end,
+					opts = {
+						visible = false,
+						tag = "system_tag",
+					},
 				},
 			},
 		},
@@ -309,16 +342,21 @@ Answer the user's questions with the tool's output.]],
 3. Explain each function or significant block of code, including parameters and return values.
 4. Highlight any specific functions or methods used and their roles.
 5. Provide context on how the code fits into a larger application if applicable.]],
+					opts = {
+						visible = false,
+					},
 				},
 				{
-					role = "${user}",
-					contains_code = true,
+					role = "user",
 					content = function(context)
 						local code =
 							require("codecompanion.helpers.actions").get_code(context.start_line, context.end_line)
 
 						return "Please explain this code:\n\n```" .. context.filetype .. "\n" .. code .. "\n```\n\n"
 					end,
+					opts = {
+						contains_code = true,
+					},
 				},
 			},
 		},
@@ -349,10 +387,12 @@ Answer the user's questions with the tool's output.]],
       - Edge cases
       - Error handling (if applicable)
 6. Provide the generated unit tests in a clear and organized manner without additional explanations or chat.]],
+					opts = {
+						visible = false,
+					},
 				},
 				{
-					role = "${user}",
-					contains_code = true,
+					role = "user",
 					content = function(context)
 						local code =
 							require("codecompanion.helpers.actions").get_code(context.start_line, context.end_line)
@@ -363,6 +403,9 @@ Answer the user's questions with the tool's output.]],
 							.. code
 							.. "\n```\n\n"
 					end,
+					opts = {
+						contains_code = true,
+					},
 				},
 			},
 		},
@@ -397,16 +440,21 @@ Ensure the fixed code:
 - Is formatted correctly.
 
 Use Markdown formatting and include the programming language name at the start of the code block.]],
+					opts = {
+						visible = false,
+					},
 				},
 				{
-					role = "${user}",
-					contains_code = true,
+					role = "user",
 					content = function(context)
 						local code =
 							require("codecompanion.helpers.actions").get_code(context.start_line, context.end_line)
 
 						return "Please fix the selected code:\n\n```" .. context.filetype .. "\n" .. code .. "\n```\n\n"
 					end,
+					opts = {
+						contains_code = true,
+					},
 				},
 			},
 		},
@@ -426,43 +474,51 @@ Use Markdown formatting and include the programming language name at the start o
 			prompts = {
 				{
 					role = "system",
-					tag = "system_tag",
 					content = function(context)
 						return "I want you to act as a senior "
 							.. context.filetype
 							.. " developer. I will ask you specific questions and I want you to return raw code only (no codeblocks and no explanations). If you can't respond with code, respond with nothing."
 					end,
+					opts = {
+						visible = false,
+						tag = "system_tag",
+					},
 				},
 				{
-					role = "${user}",
-					contains_code = true,
+					role = "user",
 					content = function(context)
 						local buf_utils = require("codecompanion.utils.buffers")
 
-						return "### buffers\n\nFor context, this is the whole of the buffer:\n\n```"
+						return " \n\n```"
 							.. context.filetype
 							.. "\n"
 							.. buf_utils.get_content(context.bufnr)
 							.. "\n```\n\n"
 					end,
+					opts = {
+						contains_code = true,
+						visible = false,
+					},
 				},
 				{
-					role = "${user}",
-					contains_code = true,
-					tag = "visual",
+					role = "user",
 					condition = function(context)
-						-- The inline strategy will automatically add this in visual mode
-						return context.is_visual == false
+						return context.is_visual
 					end,
 					content = function(context)
 						local selection =
 							require("codecompanion.helpers.actions").get_code(context.start_line, context.end_line)
-						return "And this is the specific code that relates to my question:\n\n```"
+						return "And this is some that relates to my question:\n\n```"
 							.. context.filetype
 							.. "\n"
 							.. selection
 							.. "\n```\n\n"
 					end,
+					opts = {
+						contains_code = true,
+						visible = true,
+						tag = "visual",
+					},
 				},
 			},
 		},
@@ -483,9 +539,12 @@ Use Markdown formatting and include the programming language name at the start o
 				{
 					role = "system",
 					content = [[You are an expert coder and helpful assistant who can help debug code diagnostics, such as warning and error messages. When appropriate, give solutions with code snippets as fenced codeblocks with a language identifier to enable syntax highlighting.]],
+					opts = {
+						visible = false,
+					},
 				},
 				{
-					role = "${user}",
+					role = "user",
 					content = function(context)
 						local diagnostics = require("codecompanion.helpers.actions").get_diagnostics(
 							context.start_line,
@@ -515,8 +574,7 @@ Use Markdown formatting and include the programming language name at the start o
 					end,
 				},
 				{
-					role = "${user}",
-					contains_code = true,
+					role = "user",
 					content = function(context)
 						return "This is the code, for context:\n\n"
 							.. "```"
@@ -529,6 +587,9 @@ Use Markdown formatting and include the programming language name at the start o
 							)
 							.. "\n```\n\n"
 					end,
+					opts = {
+						contains_code = true,
+					},
 				},
 			},
 		},
@@ -544,14 +605,16 @@ Use Markdown formatting and include the programming language name at the start o
 			},
 			prompts = {
 				{
-					role = "${user}",
-					contains_code = true,
+					role = "user",
 					content = function()
 						return "You are an expert at following the Conventional Commit specification. Given the git diff listed below, please generate a commit message for me:"
 							.. "\n\n```\n"
 							.. vim.fn.system("git diff")
 							.. "\n```"
 					end,
+					opts = {
+						contains_code = true,
+					},
 				},
 			},
 		},
@@ -583,10 +646,16 @@ Use Markdown formatting and include the programming language name at the start o
 			},
 			intro_message = "Welcome to CodeCompanion ✨! Press ? for options",
 
-			messages_separator = "─", -- The separator between the different messages in the chat buffer
-			show_separator = true, -- Show a separator between LLM responses?
+			separator = "─", -- The separator between the different messages in the chat buffer
 			show_settings = false, -- Show LLM settings at the top of the chat buffer?
+
 			show_token_count = true, -- Show the token count for each response?
+
+			---@param tokens number
+			---@param adapter CodeCompanion.Adapter
+			token_count = function(tokens, adapter) -- The function to display the token count
+				return " (" .. tokens .. " tokens)"
+			end,
 		},
 		inline = {
 			-- If the inline prompt creates a new buffer, how should we display this?
@@ -615,7 +684,7 @@ Use Markdown formatting and include the programming language name at the start o
 		-- strategy. It is primarily based on the GitHub Copilot Chat's prompt
 		-- but with some modifications. You can choose to remove this via
 		-- your own config but note that LLM results may not be as good
-		system_prompt = [[You are an Al programming assistant named "CodeCompanion".
+		system_prompt = [[You are an AI programming assistant named "CodeCompanion".
 You are currently plugged in to the Neovim text editor on a user's machine.
 
 Your tasks include:
