@@ -1,35 +1,64 @@
--- Define the path to the file
-local file_path = vim.fn.expand("~/.config/nvim/lua/plugins/keys/openai.txt")
-
--- Function to read the API key from the file
-local function read_api_key(file_path)
-	local file = io.open(file_path, "r") -- Open the file in read mode
-	if not file then
-		print("Error: Could not open the file at " .. file_path)
-		return nil
-	end
-
-	local api_key = file:read("*a") -- Read the entire file
-	file:close() -- Close the file after reading
-
-	-- Remove any trailing whitespace (like newline characters)
-	api_key = api_key:gsub("%s+", "")
-
-	return api_key
-end
-
 require("codecompanion").setup({
 	adapters = {
 		openai = function()
+			local function read_api_key(file_path)
+				local file = io.open(file_path, "r")
+				if not file then
+					print("Error: Could not open the file at " .. file_path)
+					return nil
+				end
+
+				local api_key = file:read("*a")
+				file:close()
+				api_key = api_key:gsub("%s+", "")
+				return api_key
+			end
+
+			local file_path = vim.fn.expand("~/.config/nvim/lua/plugins/keys/openai.txt")
 			return require("codecompanion.adapters").extend("openai", {
 				env = {
 					api_key = read_api_key(file_path),
 				},
 			})
 		end,
+		ollama = function()
+			local function read_ollama_config(file_path)
+				local file = io.open(file_path, "r")
+				if not file then
+					print("Error: Could not open the file at " .. file_path)
+					return nil, nil
+				end
+
+				local url = file:read("*l")
+				local api_key = file:read("*l")
+				file:close()
+
+				url = url and url:gsub("%s+", "")
+				api_key = api_key and api_key:gsub("%s+", "")
+
+				return url, api_key
+			end
+
+			local file_path = vim.fn.expand("~/.config/nvim/lua/plugins/keys/ollama.txt")
+			local url, api_key = read_ollama_config(file_path)
+
+			return require("codecompanion.adapters").extend("ollama", {
+				env = {
+					url = url,
+					api_key = api_key,
+				},
+				headers = {
+					["Content-Type"] = "application/json",
+					["Authorization"] = "Bearer " .. api_key,
+				},
+				parameters = {
+					sync = true,
+				},
+			})
+		end,
 		opts = {
-			allow_insecure = false, -- Allow insecure connections?
-			proxy = nil, -- [protocol://]host[:port] e.g. socks5://127.0.0.1:9999
+			allow_insecure = false,
+			proxy = nil,
 		},
 	},
 	strategies = {
