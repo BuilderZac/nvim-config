@@ -1,64 +1,13 @@
 require("codecompanion").setup({
 	adapters = {
-		openai = function()
-			local function read_api_key(file_path)
-				local file = io.open(file_path, "r")
-				if not file then
-					print("Error: Could not open the file at " .. file_path)
-					return nil
-				end
-
-				local api_key = file:read("*a")
-				file:close()
-				api_key = api_key:gsub("%s+", "")
-				return api_key
-			end
-
-			local file_path = vim.fn.expand("~/.config/nvim/lua/plugins/keys/openai.txt")
-			return require("codecompanion.adapters").extend("openai", {
-				env = {
-					api_key = read_api_key(file_path),
-				},
-			})
-		end,
-		ollama = function()
-			local function read_ollama_config(file_path)
-				local file = io.open(file_path, "r")
-				if not file then
-					print("Error: Could not open the file at " .. file_path)
-					return nil, nil
-				end
-
-				local url = file:read("*l")
-				local api_key = file:read("*l")
-				file:close()
-
-				url = url and url:gsub("%s+", "")
-				api_key = api_key and api_key:gsub("%s+", "")
-
-				return url, api_key
-			end
-
-			local file_path = vim.fn.expand("~/.config/nvim/lua/plugins/keys/ollama.txt")
-			local url, api_key = read_ollama_config(file_path)
-
-			return require("codecompanion.adapters").extend("ollama", {
-				env = {
-					url = url,
-					api_key = api_key,
-				},
-				headers = {
-					["Content-Type"] = "application/json",
-					["Authorization"] = "Bearer " .. api_key,
-				},
-				parameters = {
-					sync = true,
-				},
-			})
-		end,
+		anthropic = "anthropic",
+		copilot = "copilot",
+		gemini = "gemini",
+		ollama = "ollama",
+		openai = "openai",
 		opts = {
-			allow_insecure = false,
-			proxy = nil,
+			allow_insecure = false, -- Allow insecure connections?
+			proxy = nil, -- [protocol://]host[:port] e.g. socks5://127.0.0.1:9999
 		},
 	},
 	strategies = {
@@ -99,7 +48,7 @@ require("codecompanion").setup({
 					description = "Share a loaded buffer's contents with the LLM",
 					opts = {
 						contains_code = true,
-						provider = "default", -- default|telescope
+						provider = "default", -- default|telescope|mini_pick|fzf_lua
 					},
 				},
 				["file"] = {
@@ -108,7 +57,7 @@ require("codecompanion").setup({
 					opts = {
 						contains_code = true,
 						max_lines = 1000,
-						provider = "telescope", -- telescope|mini_pick
+						provider = "telescope", -- telescope|mini_pick|fzf_lua
 					},
 				},
 			},
@@ -288,8 +237,8 @@ Answer the user's questions with the tool's output.]],
 			},
 		},
 	},
-	-- DEFAULT PROMPTS ----------------------------------------------------------
-	default_prompts = {
+	-- PRE-DEFINED PROMPTS ------------------------------------------------------
+	pre_defined_prompts = {
 		["Custom Prompt"] = {
 			strategy = "inline",
 			description = "Prompt the LLM from Neovim",
@@ -678,7 +627,7 @@ Use Markdown formatting and include the programming language name at the start o
 		send_code = true,
 
 		use_default_actions = true, -- Show the default actions in the action palette?
-		use_default_prompts = true, -- Show the default prompts in the action palette?
+		use_default_pre_defined_prompts = true, -- Show the default pre-defined prompts in the action palette?
 
 		-- This is the default prompt which is sent with every request in the chat
 		-- strategy. It is primarily based on the GitHub Copilot Chat's prompt
