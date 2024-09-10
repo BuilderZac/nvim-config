@@ -1,3 +1,4 @@
+local chosenAdapter = "openai"
 require("codecompanion").setup({
 	adapters = {
 		anthropic = "anthropic",
@@ -13,7 +14,7 @@ require("codecompanion").setup({
 	strategies = {
 		-- CHAT STRATEGY ----------------------------------------------------------
 		chat = {
-			adapter = "openai",
+			adapter = chosenAdapter,
 			roles = {
 				llm = "CodeCompanion", -- The markdown header content for the LLM's responses
 				user = "Me", -- The markdown header for your questions
@@ -180,7 +181,7 @@ require("codecompanion").setup({
 		},
 		-- INLINE STRATEGY --------------------------------------------------------
 		inline = {
-			adapter = "openai",
+			adapter = chosenAdapter,
 			keymaps = {
 				accept_change = {
 					modes = {
@@ -210,7 +211,7 @@ require("codecompanion").setup({
 		},
 		-- AGENT STRATEGY ---------------------------------------------------------
 		agent = {
-			adapter = "openai",
+			adapter = chosenAdapter,
 			tools = {
 				["code_runner"] = {
 					callback = "tools.code_runner",
