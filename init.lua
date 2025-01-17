@@ -300,16 +300,32 @@ require("lazy").setup({
 	{
 		"olimorris/codecompanion.nvim",
 		dependencies = {
-			"nvim-lua/plenary.nvim",
-			"nvim-treesitter/nvim-treesitter",
-			"nvim-telescope/telescope.nvim", -- Optional
+			{ "nvim-treesitter/nvim-treesitter", build = ":TSUpdate" },
+			{ "nvim-lua/plenary.nvim" },
+			-- Test with blink.cmp
 			{
-				"stevearc/dressing.nvim", -- Optional: Improves the default Neovim UI
-				opts = {},
+				"saghen/blink.cmp",
+				lazy = false,
+				version = "*",
+				opts = {
+					keymap = {
+						preset = "enter",
+						["<S-Tab>"] = { "select_prev", "fallback" },
+						["<Tab>"] = { "select_next", "fallback" },
+					},
+					sources = {
+						default = { "lsp", "path", "buffer", "codecompanion" },
+						cmdline = {}, -- Disable sources for command-line mode
+					},
+				},
 			},
+			-- Test with nvim-cmp
+			-- { "hrsh7th/nvim-cmp" },
 		},
 		config = function(_, opts)
-			require("plugins.codecompanion") -- the location of this GIST.
+			log_level =
+				"DEBUG", -- or "TRACE"
+				require("plugins.codecompanion") -- the location of this GIST.
 		end,
 	},
 
