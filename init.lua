@@ -200,10 +200,10 @@ require("lazy").setup({
 	},
 
 	{ -- Add feline
-		"freddiehaddad/feline.nvim",
+		"famiu/feline.nvim",
 		opts = {},
 		config = function(_, opts)
-			require("feline").statuscolumn.setup() -- to use statuscolumn
+			--require("feline").statuscolumn.setup() -- to use statuscolumn
 			require("plugins.feline") -- the location of this GIST.
 
 			--require("feline").use_theme() -- to use a custom theme
