@@ -277,9 +277,15 @@ require("lazy").setup({
 	},
 
 	-- QOL
+	--
+	{ -- Add color schemes
+		"rafi/awesome-vim-colorschemes",
+		priority = 1001,
+	},
 
 	{ -- Add feline
 		"famiu/feline.nvim",
+		priority = 27,
 		opts = {},
 		config = function(_, opts)
 			--require("feline").statuscolumn.setup() -- to use statuscolumn
@@ -291,11 +297,6 @@ require("lazy").setup({
 
 	{ -- Add devicons
 		"ryanoasis/vim-devicons",
-	},
-
-	{ -- Add color schemes
-		"rafi/awesome-vim-colorschemes",
-		priority = 1001,
 	},
 
 	{ -- Add Lazygit
