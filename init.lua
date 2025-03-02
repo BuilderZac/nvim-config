@@ -255,15 +255,21 @@ require("lazy").setup({
 
 	{ -- Add codecompanion
 		"olimorris/codecompanion.nvim",
+		config = true,
+		opts = {
+			strategies = {
+				chat = {
+					adapter = "openai",
+				},
+				inline = {
+					adapter = "openai",
+				},
+			},
+		},
 		dependencies = {
-			{ "nvim-treesitter/nvim-treesitter", build = ":TSUpdate" },
+			{ "nvim-treesitter/nvim-treesitter" },
 			{ "nvim-lua/plenary.nvim" },
 		},
-		config = function(_, opts)
-			log_level =
-				"DEBUG", -- or "TRACE"
-				require("plugins.codecompanion") -- the location of this GIST.
-		end,
 	},
 
 	{ -- Add visual multi
