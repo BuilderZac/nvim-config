@@ -258,8 +258,6 @@ require("lazy").setup({
 		dependencies = {
 			{ "nvim-treesitter/nvim-treesitter", build = ":TSUpdate" },
 			{ "nvim-lua/plenary.nvim" },
-			-- Test with nvim-cmp
-			-- { "hrsh7th/nvim-cmp" },
 		},
 		config = function(_, opts)
 			log_level =
@@ -291,6 +289,7 @@ require("lazy").setup({
 
 	{ -- Add color schemes
 		"rafi/awesome-vim-colorschemes",
+		priority = 1001,
 	},
 
 	{ -- Add Lazygit
