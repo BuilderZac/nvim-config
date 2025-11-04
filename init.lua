@@ -906,16 +906,24 @@ require("lazy").setup({
 				preset = "none", -- modded
 
 				-- M3 START
-				["<C-k>"] = { "select_prev", "fallback" },
-				["<C-j>"] = { "select_next", "fallback" },
-				["<tab>"] = { "accept", "fallback" },
+				["<C-space>"] = { "show", "show_documentation", "hide_documentation" },
+				["<C-e>"] = { "hide", "fallback" },
+				["<C-y>"] = { "select_and_accept", "fallback" },
+				["<S-space>"] = { "select_and_accept", "fallback" },
 
-				-- show with a list of providers
-				["<C-space>"] = {
-					function(cmp)
-						cmp.show({ providers = { "snippets" } })
-					end,
-				},
+				["<Up>"] = { "select_prev", "fallback" },
+				["<Down>"] = { "select_next", "fallback" },
+				["<C-k>"] = { "select_prev", "fallback_to_mappings" },
+				["<C-j>"] = { "select_next", "fallback_to_mappings" },
+
+				["<C-b>"] = { "scroll_documentation_up", "fallback" },
+				["<C-f>"] = { "scroll_documentation_down", "fallback" },
+
+				["<Tab>"] = { "snippet_forward", "fallback" },
+				["<S-Tab>"] = { "snippet_backward", "fallback" },
+
+				["<C-k>"] = { "show_signature", "hide_signature", "fallback" },
+
 				-- M3 END
 
 				-- For more advanced Luasnip keymaps (e.g. selecting choice nodes, expansion) see:
