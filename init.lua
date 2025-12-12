@@ -204,6 +204,7 @@ require("lazy").setup({
 
 	{ -- Add codecompanion
 		"olimorris/codecompanion.nvim",
+		version = "v17.33.0",
 		config = true,
 		opts = {
 			strategies = {
