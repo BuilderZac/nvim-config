@@ -906,10 +906,10 @@ require("lazy").setup({
 				preset = "none", -- modded
 
 				-- M3 START
-				["<C-space>"] = { "show", "show_documentation", "hide_documentation" },
+				--["<C-space>"] = { "show", "show_documentation", "hide_documentation" },
 				["<C-e>"] = { "hide", "fallback" },
 				["<C-y>"] = { "select_and_accept", "fallback" },
-				["<S-space>"] = { "select_and_accept", "fallback" },
+				["<C-space>"] = { "select_and_accept", "fallback" },
 
 				["<Up>"] = { "select_prev", "fallback" },
 				["<Down>"] = { "select_next", "fallback" },
