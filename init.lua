@@ -222,12 +222,16 @@ require("lazy").setup({
 		},
 	},
 
+	-- QOL
+
+	{ -- Add gdb wrapper
+		"sakhnik/nvim-gdb",
+	},
+
 	{ -- Add visual multi
 		"mg979/vim-visual-multi",
 	},
 
-	-- QOL
-	--
 	{ -- Add color schemes
 		"rafi/awesome-vim-colorschemes",
 		priority = 1001,
