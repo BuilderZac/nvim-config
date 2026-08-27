@@ -16,6 +16,8 @@ vim.o.expandtab = true
 vim.o.smartindent = true
 vim.o.tabstop = 3
 vim.o.shiftwidth = 3
+
+vim.env["OPENAI_API_KEY"] = vim.fn.trim(vim.fn.readfile(vim.fn.expand("~/.config/codecompanion/token"))[1])
 -- M1 END
 
 do
@@ -311,28 +313,49 @@ do
 	vim.keymap.set("t", "<C-w>", [[<C-\><C-n><C-w>]])
 	vim.keymap.set("n", "<C-s>", ":ToggleTerm<CR>", { desc = "Toggle ToggleTerm open and closed" })
 
+  -- code companion is weird
 	vim.pack.add({ { src = gh("nvim-lua/plenary.nvim") } })
-
-	vim.pack.add({
-		{
-			src = gh("olimorris/codecompanion.nvim"),
-			version = "v19.23.0",
-			dependencies = {
-				{ src = gh("nvim-treesitter/nvim-treesitter") },
-				{ src = gh("nvim-lua/plenary.nvim") },
-			},
-		},
-	})
-	require("codecompanion").setup({
-		strategies = {
-			chat = {
-				adapter = "openai",
-			},
-			inline = {
-				adapter = "openai",
-			},
-		},
-	})
+	vim.pack.add({ { src = gh("saghen/blink.cmp"), version = vim.version.range("1.*") } })
+  vim.pack.add({ {
+  src = "https://www.github.com/olimorris/codecompanion.nvim",
+  version = vim.version.range("^19.0.0")
+  } })
+  require("codecompanion").setup({
+    interactions = {
+      chat = {
+        adapter = "openai",
+        opts = {
+          completion_provider = "blink",
+        },
+        tools = {
+          ["web_search"] = {
+            opts = {
+              adapter = "duckduckgo",
+            },
+          },
+        },
+      },
+      inline = {
+        adapter = "openai",
+      },
+      cmd = {
+        adapter = "openai",
+      },
+    },
+  })
+  vim.api.nvim_create_autocmd("BufEnter", {
+    callback = function(args)
+      local name = vim.api.nvim_buf_get_name(args.buf)
+      if name:match("%[CodeCompanion%]") then
+        vim.defer_fn(function()
+          vim.keymap.set("i", "<C-c>", "<Esc>", { buffer = args.buf, silent = true, noremap = true })
+          vim.keymap.set("t", "<C-c>", [[<C-\><C-n>]], { buffer = args.buf, silent = true, noremap = true })
+          vim.keymap.set("n", "<C-c>", "<Nop>", { buffer = args.buf, silent = true, noremap = true })
+          vim.keymap.set("v", "<C-c>", "<Nop>", { buffer = args.buf, silent = true, noremap = true })
+        end, 100)
+      end
+    end,
+  })
 
 	-- QOL
 
@@ -787,6 +810,7 @@ do
 	--  See `:help lsp-config` for information about keys and how to configure
 	---@type table<string, vim.lsp.Config>
 	local servers = {
+    pylsp = {},
 		-- clangd = {},
 		-- gopls = {},
 		-- pyright = {},
@@ -1031,7 +1055,7 @@ do
 
 	-- Ensure basic parsers are installed
 	local parsers =
-		{ "bash", "c", "diff", "html", "lua", "luadoc", "markdown", "markdown_inline", "query", "vim", "vimdoc" }
+		{ "bash", "c", "diff", "html", "lua", "luadoc", "markdown", "markdown_inline", "query", "vim", "vimdoc"}
 	require("nvim-treesitter").install(parsers)
 
 	---@param buf integer

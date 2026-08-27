@@ -17,7 +17,7 @@
     "codecompanion.nvim": {
       "rev": "fd07e440c115e318031c5f3f8c746f01eb4cac56",
       "src": "https://github.com/olimorris/codecompanion.nvim",
-      "version": "'v19.23.0'"
+      "version": "19.0.0 - 20.0.0"
     },
     "conform.nvim": {
       "rev": "016802de402556da54c36bd7359b441266b01cdd",
