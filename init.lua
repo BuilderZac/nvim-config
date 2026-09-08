@@ -323,7 +323,10 @@ do
   require("codecompanion").setup({
     interactions = {
       chat = {
-        adapter = "openai",
+        adapter = {
+          name = "openai",
+          model = "gpt-5.6-luna",
+        },
         opts = {
           completion_provider = "blink",
         },
@@ -336,10 +339,16 @@ do
         },
       },
       inline = {
-        adapter = "openai",
+        adapter = {
+          name = "openai",
+          model = "gpt-5.6-luna",
+        },
       },
       cmd = {
-        adapter = "openai",
+        adapter = {
+          name = "openai",
+          model = "gpt-5.6-luna",
+        },
       },
     },
   })
