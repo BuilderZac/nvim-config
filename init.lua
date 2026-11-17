@@ -18,6 +18,8 @@ vim.o.tabstop = 3
 vim.o.shiftwidth = 3
 
 vim.env["OPENAI_API_KEY"] = vim.fn.trim(vim.fn.readfile(vim.fn.expand("~/.config/codecompanion/token"))[1])
+
+vim.opt.termguicolors = true
 -- M1 END
 
 do
